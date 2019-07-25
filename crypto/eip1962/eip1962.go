@@ -1,10 +1,9 @@
 package eip1962
 
 /*
-#cgo LDFLAGS: -L. -leip1962
-#include "./src/wrapper.h"
-extern int run(const char *i, uint32_t i_len, char *o, uint32_t *o_len, char *err, uint32_t *char_len);
-extern int meter_gas(const char *i, uint32_t i_len, uint64_t *gas);
+#cgo CXXFLAGS: -std=c++17
+#cgo CXXFLAGS: -I./include
+#include "wrapper.h"
 */
 import "C"
 
