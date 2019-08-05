@@ -27,6 +27,8 @@ import (
 	"github.com/ethereum/go-ethereum/crypto/bn256"
 	"github.com/ethereum/go-ethereum/params"
 	"golang.org/x/crypto/ripemd160"
+
+	"github.com/matter-labs/go-eip1962"
 )
 
 // PrecompiledContract is the basic interface for native Go contracts. The implementation
@@ -57,6 +59,7 @@ var PrecompiledContractsByzantium = map[common.Address]PrecompiledContract{
 	common.BytesToAddress([]byte{6}): &bn256Add{},
 	common.BytesToAddress([]byte{7}): &bn256ScalarMul{},
 	common.BytesToAddress([]byte{8}): &bn256Pairing{},
+	common.BytesToAddress([]byte{8}): &eip1962Precompile{},
 }
 
 // RunPrecompiledContract runs and evaluates the output of a precompiled contract.
@@ -357,4 +360,14 @@ func (c *bn256Pairing) Run(input []byte) ([]byte, error) {
 		return true32Byte, nil
 	}
 	return false32Byte, nil
+}
+
+type eip1962Precompile struct{}
+
+func (c *eip1962Precompile) RequiredGas(input []byte) uint64 {
+	return eip1962.EstimateGas(input)
+}
+
+func (c *eip1962Precompile) Run(input []byte) ([]byte, error) {
+	return eip1962.Call(input)
 }

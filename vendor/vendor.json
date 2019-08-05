@@ -250,6 +250,12 @@
 			"tree": true
 		},
 		{
+			"checksumSHA1": "WcNqvJ4ZElxtDgRJar7J/GVKB9M=",
+			"path": "github.com/matter-labs/go-eip1962",
+			"revision": "8d70c05d1d08438567d799a6ba3bb34ed13a2e49",
+			"revisionTime": "2019-08-05T16:00:48Z"
+		},
+		{
 			"checksumSHA1": "SEnjvwVyfuU2xBaOfXfwPD5MZqk=",
 			"path": "github.com/mattn/go-colorable",
 			"revision": "efa589957cd060542a26d2dd7832fd6a6c6c3ade",
