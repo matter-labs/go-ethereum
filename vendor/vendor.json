@@ -250,10 +250,11 @@
 			"tree": true
 		},
 		{
-			"checksumSHA1": "WcNqvJ4ZElxtDgRJar7J/GVKB9M=",
+			"checksumSHA1": "JfQKa5UDMyMamb5otntL/NCcjFs=",
 			"path": "github.com/matter-labs/go-eip1962",
-			"revision": "8d70c05d1d08438567d799a6ba3bb34ed13a2e49",
-			"revisionTime": "2019-08-05T16:00:48Z"
+			"revision": "353f96985796272be5534b42d2b708e1023f470b",
+			"revisionTime": "2019-08-05T22:20:20Z",
+			"tree": true
 		},
 		{
 			"checksumSHA1": "SEnjvwVyfuU2xBaOfXfwPD5MZqk=",
