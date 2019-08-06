@@ -306,6 +306,11 @@ type parityChainSpecAltBnPairingPricing struct {
 	Pair uint64 `json:"pair"`
 }
 
+type parityChainSpecEIP1962Pricing struct {
+	Base uint64 `json:"base"`
+	Pair uint64 `json:"pair"`
+}
+
 // newParityChainSpec converts a go-ethereum genesis block into a Parity specific
 // chain specification format.
 func newParityChainSpec(network string, genesis *core.Genesis, bootnodes []string) (*parityChainSpec, error) {
