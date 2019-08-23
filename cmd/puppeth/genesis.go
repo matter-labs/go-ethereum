@@ -289,6 +289,7 @@ type parityChainSpecPricing struct {
 	Linear       *parityChainSpecLinearPricing       `json:"linear,omitempty"`
 	ModExp       *parityChainSpecModExpPricing       `json:"modexp,omitempty"`
 	AltBnPairing *parityChainSpecAltBnPairingPricing `json:"alt_bn128_pairing,omitempty"`
+	EIP1962      *parityChainSpecEIP1962Pricing      `json:"eip_1962,omitempty"`
 }
 
 type parityChainSpecLinearPricing struct {
@@ -303,6 +304,9 @@ type parityChainSpecModExpPricing struct {
 type parityChainSpecAltBnPairingPricing struct {
 	Base uint64 `json:"base"`
 	Pair uint64 `json:"pair"`
+}
+
+type parityChainSpecEIP1962Pricing struct {
 }
 
 // newParityChainSpec converts a go-ethereum genesis block into a Parity specific
@@ -410,6 +414,9 @@ func newParityChainSpec(network string, genesis *core.Genesis, bootnodes []strin
 		})
 		spec.setPrecompile(8, &parityChainSpecBuiltin{
 			Name: "alt_bn128_pairing", ActivateAt: blnum, Pricing: &parityChainSpecPricing{AltBnPairing: &parityChainSpecAltBnPairingPricing{Base: 100000, Pair: 80000}},
+		})
+		spec.setPrecompile(9, &parityChainSpecBuiltin{
+			Name: "eip_1962", ActivateAt: blnum, Pricing: &parityChainSpecPricing{EIP1962: &parityChainSpecEIP1962Pricing{}},
 		})
 	}
 	return spec, nil
