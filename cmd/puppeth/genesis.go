@@ -289,7 +289,7 @@ type parityChainSpecPricing struct {
 	Linear       *parityChainSpecLinearPricing       `json:"linear,omitempty"`
 	ModExp       *parityChainSpecModExpPricing       `json:"modexp,omitempty"`
 	AltBnPairing *parityChainSpecAltBnPairingPricing `json:"alt_bn128_pairing,omitempty"`
-	EIP1962      *parityChainSpecEIP1962Pricing      `json:"eip1962,omitempty"`
+	EIP1962      *parityChainSpecEIP1962Pricing      `json:"eip_1962,omitempty"`
 }
 
 type parityChainSpecLinearPricing struct {
@@ -307,8 +307,6 @@ type parityChainSpecAltBnPairingPricing struct {
 }
 
 type parityChainSpecEIP1962Pricing struct {
-	Base uint64 `json:"base"`
-	Pair uint64 `json:"pair"`
 }
 
 // newParityChainSpec converts a go-ethereum genesis block into a Parity specific

@@ -217,6 +217,8 @@ type TxPool struct {
 	signer      types.Signer
 	mu          sync.RWMutex
 
+	istanbul bool // Fork indicator whether we are in the istanbul stage.
+
 	currentState  *state.StateDB // Current state in the blockchain head
 	pendingNonces *txNoncer      // Pending state tracking virtual nonces
 	currentMaxGas uint64         // Current gas limit for transaction caps
@@ -540,7 +542,7 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 		return ErrInsufficientFunds
 	}
 	// Ensure the transaction has more gas than the basic tx fee.
-	intrGas, err := IntrinsicGas(tx.Data(), tx.To() == nil, true)
+	intrGas, err := IntrinsicGas(tx.Data(), tx.To() == nil, true, pool.istanbul)
 	if err != nil {
 		return err
 	}
@@ -745,13 +747,13 @@ func (pool *TxPool) AddRemotes(txs []*types.Transaction) []error {
 }
 
 // This is like AddRemotes, but waits for pool reorganization. Tests use this method.
-func (pool *TxPool) addRemotesSync(txs []*types.Transaction) []error {
+func (pool *TxPool) AddRemotesSync(txs []*types.Transaction) []error {
 	return pool.addTxs(txs, false, true)
 }
 
 // This is like AddRemotes with a single transaction, but waits for pool reorganization. Tests use this method.
 func (pool *TxPool) addRemoteSync(tx *types.Transaction) error {
-	errs := pool.addRemotesSync([]*types.Transaction{tx})
+	errs := pool.AddRemotesSync([]*types.Transaction{tx})
 	return errs[0]
 }
 
@@ -854,9 +856,7 @@ func (pool *TxPool) removeTx(hash common.Hash, outofbound bool) {
 				pool.enqueueTx(tx.Hash(), tx)
 			}
 			// Update the account nonce if needed
-			if nonce := tx.Nonce(); pool.pendingNonces.get(addr) > nonce {
-				pool.pendingNonces.set(addr, nonce)
-			}
+			pool.pendingNonces.setIfLower(addr, tx.Nonce())
 			// Reduce the pending counter
 			pendingCounter.Dec(int64(1 + len(invalids)))
 			return
@@ -1120,6 +1120,10 @@ func (pool *TxPool) reset(oldHead, newHead *types.Header) {
 	log.Debug("Reinjecting stale transactions", "count", len(reinject))
 	senderCacher.recover(pool.signer, reinject)
 	pool.addTxsLocked(reinject, false)
+
+	// Update all fork indicator by next pending block number.
+	next := new(big.Int).Add(newHead.Number, big.NewInt(1))
+	pool.istanbul = pool.chainconfig.IsIstanbul(next)
 }
 
 // promoteExecutables moves transactions that have become processable from the
@@ -1232,9 +1236,7 @@ func (pool *TxPool) truncatePending() {
 						pool.all.Remove(hash)
 
 						// Update the account nonce to the dropped transaction
-						if nonce := tx.Nonce(); pool.pendingNonces.get(offenders[i]) > nonce {
-							pool.pendingNonces.set(offenders[i], nonce)
-						}
+						pool.pendingNonces.setIfLower(offenders[i], tx.Nonce())
 						log.Trace("Removed fairness-exceeding pending transaction", "hash", hash)
 					}
 					pool.priced.Removed(len(caps))
@@ -1261,9 +1263,7 @@ func (pool *TxPool) truncatePending() {
 					pool.all.Remove(hash)
 
 					// Update the account nonce to the dropped transaction
-					if nonce := tx.Nonce(); pool.pendingNonces.get(addr) > nonce {
-						pool.pendingNonces.set(addr, nonce)
-					}
+					pool.pendingNonces.setIfLower(addr, tx.Nonce())
 					log.Trace("Removed fairness-exceeding pending transaction", "hash", hash)
 				}
 				pool.priced.Removed(len(caps))
