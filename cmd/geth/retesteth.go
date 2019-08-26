@@ -165,14 +165,18 @@ type CParamsAccount struct {
 }
 
 type CPAccountPrecompiled struct {
-	Name          string                `json:"name"`
-	StartingBlock math.HexOrDecimal64   `json:"startingBlock"`
-	Linear        *CPAPrecompiledLinear `json:"linear"`
+	Name          string                 `json:"name"`
+	StartingBlock math.HexOrDecimal64    `json:"startingBlock"`
+	Linear        *CPAPrecompiledLinear  `json:"linear"`
+	EIP1962       *CPAPrecompiledEIP1962 `json:"eip1962"`
 }
 
 type CPAPrecompiledLinear struct {
 	Base uint64 `json:"base"`
 	Word uint64 `json:"word"`
+}
+
+type CPAPrecompiledEIP1962 struct {
 }
 
 type AccountRangeResult struct {
